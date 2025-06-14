@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,15 @@ public class UDPClient {
         return list;
     }
     private static void downloadFile(String host, int port, String filename) throws IOException {
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress serverAddress = InetAddress.getByName(host);
+
+        String downloadRequest = "DOWNLOAD " + filename;
+        String response = ReliableSender.sendAndReceive(socket, downloadRequest, serverAddress, port, 5);
+        if (response.startsWith("ERR")) {
+            System.out.println("File not found: " + filename);
+            return;
+        }
         
     }
 }
