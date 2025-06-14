@@ -44,4 +44,10 @@ public class UDPServer {
             }
         }
     }
+    private static synchronized int getNextDataPort() {
+        int port = nextDataPort;
+        nextDataPort++;
+        if (nextDataPort > DATA_PORT_END) nextDataPort = DATA_PORT_START;
+        return port;
+    }
 }
