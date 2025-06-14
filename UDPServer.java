@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,4 +14,12 @@ public class UDPServer {
             System.out.println("Usage: java UDPServer <port>");
             return;
         }
+
+        int listenPort = Integer.parseInt(args[0]);
+        DatagramSocket serverSocket = new DatagramSocket(listenPort);
+        System.out.println("Server listening on port " + listenPort);
+
+        
+
+    }
 }
