@@ -20,8 +20,11 @@ public class ServerWorker implements Runnable {
     public void run() {
         try (DatagramSocket socket = new DatagramSocket(port);
              FileInputStream fis = new FileInputStream(new File("ServerFiles", filename))) {
-                
-                
+            byte[] buffer = new byte[1000];
+            int start = 0;
+            int readBytes;
+
+
         } catch (IOException e){
             e.printStackTrace();
         }
