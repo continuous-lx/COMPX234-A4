@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,10 @@ public class UDPServer {
             byte[] buffer = new byte[2048];
             DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
             serverSocket.receive(requestPacket);
+
+            String request = new String(requestPacket.getData(), 0, requestPacket.getLength());
+            InetAddress clientAddress = requestPacket.getAddress();
+            int clientPort = requestPacket.getPort();
         }
     }
 }
