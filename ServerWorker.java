@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Base64;
@@ -34,6 +35,16 @@ public class ServerWorker implements Runnable {
                 start = end + 1;
             }
 
+            while (true) {
+                DatagramPacket packet = new DatagramPacket(new byte[2048], 2048);
+                socket.receive(packet);
+                String msg = new String(packet.getData(), 0, packet.getLength());
+                if (msg.startsWith("FILE") && msg.contains("CLOSE")) {
+                    String ack = "FILE " + filename + " CLOSE_OK";
+                    socket.send(new DatagramPacket(ack.getBytes(), ack.length(), clientAddress, packet.getPort()));
+                    break;
+                }
+            }
         } catch (IOException e){
             e.printStackTrace();
         }
