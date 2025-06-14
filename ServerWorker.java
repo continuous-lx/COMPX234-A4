@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Base64;
 
 public class ServerWorker implements Runnable {
      private String filename;
@@ -24,6 +25,14 @@ public class ServerWorker implements Runnable {
             int start = 0;
             int readBytes;
 
+            while ((readBytes = fis.read(buffer)) != -1) {
+                String encoded = Base64.getEncoder().encodeToString(buffer, 0, readBytes);
+                int end = start + readBytes - 1;
+                String response = String.format("FILE %s OK START %d END %d DATA %s", filename, start, end, encoded);
+
+                ReliableSender.sendAndWait(socket, response, clientAddress, port);
+                start = end + 1;
+            }
 
         } catch (IOException e){
             e.printStackTrace();
