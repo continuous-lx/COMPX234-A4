@@ -1,9 +1,11 @@
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class UDPClient {
@@ -46,5 +48,24 @@ public class UDPClient {
         int fileSize = Integer.parseInt(parts[4]);
         int dataPort = Integer.parseInt(parts[6]);
         DatagramSocket fileSocket = new DatagramSocket();
+
+        try (FileOutputStream fos = new FileOutputStream("ClientFiles/" + filename)) {
+            int start = 0;
+            while (start < fileSize) {
+                int end = Math.min(start + 999, fileSize - 1);
+                String request = String.format("FILE %s GET START %d END %d", filename, start, end);
+                String reply = ReliableSender.sendAndReceive(fileSocket, request, serverAddress, dataPort, 5);
+
+                String base64 = reply.substring(reply.indexOf("DATA") + 5);
+                byte[] data = Base64.getDecoder().decode(base64);
+                fos.write(data);
+                start = end + 1;
+            }
+
+            // Send CLOSE
+            String close = "FILE " + filename + " CLOSE";
+            String closeOk = ReliableSender.sendAndReceive(fileSocket, close, serverAddress, dataPort, 3);
+            System.out.println("Downloaded " + filename);
+        }
     }
 }
