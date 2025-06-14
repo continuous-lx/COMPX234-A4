@@ -41,6 +41,10 @@ public class UDPClient {
             System.out.println("File not found: " + filename);
             return;
         }
-        
+
+        String[] parts = response.split(" ");
+        int fileSize = Integer.parseInt(parts[4]);
+        int dataPort = Integer.parseInt(parts[6]);
+        DatagramSocket fileSocket = new DatagramSocket();
     }
 }
