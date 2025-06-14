@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class ServerWorker implements Runnable {
@@ -14,6 +18,12 @@ public class ServerWorker implements Runnable {
     }
 
     public void run() {
-
+        try (DatagramSocket socket = new DatagramSocket(port);
+             FileInputStream fis = new FileInputStream(new File("ServerFiles", filename))) {
+                
+                
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
