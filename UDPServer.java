@@ -19,7 +19,8 @@ public class UDPServer {
         DatagramSocket serverSocket = new DatagramSocket(listenPort);
         System.out.println("Server listening on port " + listenPort);
 
-        
-
+        while(true) {
+            
+        }
     }
 }
