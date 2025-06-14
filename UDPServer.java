@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +21,9 @@ public class UDPServer {
         System.out.println("Server listening on port " + listenPort);
 
         while(true) {
-            
+            byte[] buffer = new byte[2048];
+            DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
+            serverSocket.receive(requestPacket);
         }
     }
 }
