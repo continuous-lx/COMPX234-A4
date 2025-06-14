@@ -1,9 +1,6 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.*;
+import java.net.*;
+import java.util.concurrent.*;
 
 public class UDPServer {
     private static final int DATA_PORT_START = 50000;
@@ -29,6 +26,22 @@ public class UDPServer {
             String request = new String(requestPacket.getData(), 0, requestPacket.getLength());
             InetAddress clientAddress = requestPacket.getAddress();
             int clientPort = requestPacket.getPort();
+
+            if (request.startsWith("DOWNLOAD")) {
+                String filename = request.split(" ")[1];
+                File file = new File("ServerFiles", filename);
+                if (!file.exists()) {
+                    String errMsg = "ERR " + filename + " NOT_FOUND";
+                    serverSocket.send(new DatagramPacket(errMsg.getBytes(), errMsg.length(), clientAddress, clientPort));
+                } else {
+                    int fileSize = (int) file.length();
+                    int assignedPort = getNextDataPort();
+                    String okMsg = "OK " + filename + " SIZE " + fileSize + " PORT " + assignedPort;
+                    serverSocket.send(new DatagramPacket(okMsg.getBytes(), okMsg.length(), clientAddress, clientPort));
+
+                    executor.submit(new ServerWorker(filename, fileSize, clientAddress, assignedPort));
+                }
+            }
         }
     }
 }
