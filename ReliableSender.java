@@ -10,6 +10,19 @@ public class ReliableSender {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
         socket.setSoTimeout(1000);
 
+        for (int i = 0; i < retries; i++) {
+            try {
+                socket.send(packet);
+
+                byte[] responseBuffer = new byte[4096];
+                DatagramPacket response = new DatagramPacket(responseBuffer, responseBuffer.length);
+                socket.receive(response);
+                return new String(response.getData(), 0, response.getLength());
+            } catch (SocketTimeoutException e) {
+                System.out.println("Timeout, retrying... (" + (i + 1) + ")");
+                socket.setSoTimeout(1000 * (i + 2));
+            }
+        }
 
         throw new IOException("No response after retries.");
     }
