@@ -13,6 +13,37 @@ public class UDPServer {
             System.out.println("Usage: java UDPServer <port>");
             return;
         }
+        
+        class ServerWorker implements Runnable {
+            private final String filename;
+            private final int fileSize;
+            private final InetAddress clientAddress;
+            private final int dataPort;
+        
+            public ServerWorker(String filename, int fileSize, InetAddress clientAddress, int dataPort) {
+                this.filename = filename;
+                this.fileSize = fileSize;
+                this.clientAddress = clientAddress;
+                this.dataPort = dataPort;
+            }
+        
+            @Override
+            public void run() {
+                try (DatagramSocket dataSocket = new DatagramSocket()) {
+                    File file = new File("ServerFiles", filename);
+                    byte[] buffer = new byte[1024];
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        int bytesRead;
+                        while ((bytesRead = fis.read(buffer)) != -1) {
+                            DatagramPacket packet = new DatagramPacket(buffer, bytesRead, clientAddress, dataPort);
+                            dataSocket.send(packet);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         int listenPort = Integer.parseInt(args[0]);
         DatagramSocket serverSocket = new DatagramSocket(listenPort);
